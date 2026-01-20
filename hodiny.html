@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>IT Digitální Hodiny</title>
+<style>
+    body {
+        background-color: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Courier New', monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    h1 {
+        margin-bottom: 30px;
+    }
+
+    .section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 10px 0;
+    }
+
+    .led-row {
+        display: flex;
+    }
+
+    .led {
+        width: 20px;
+        height: 20px;
+        margin: 3px;
+        background-color: #222;
+        border-radius: 4px;
+    }
+
+    .led.on {
+        background-color: #00ff00;
+        box-shadow: 0 0 8px #00ff00;
+    }
+
+    .label {
+        font-size: 0.9em;
+        margin-top: 5px;
+        color: #888;
+    }
+
+    .classic {
+        margin-top: 20px;
+        font-size: 1.8em;
+    }
+</style>
+</head>
+<body>
+
+<h1>IT Digitální Hodiny</h1>
+
+<div class="section">
+    <div class="led-row" id="hours"></div>
+    <div class="label">HODINY (BIN)</div>
+</div>
+
+<div class="section">
+    <div class="led-row" id="minutes"></div>
+    <div class="label">MINUTY (OCT)</div>
+</div>
+
+<div class="section">
+    <div class="led-row" id="seconds"></div>
+    <div class="label">SEKUNDY (HEX)</div>
+</div>
+
+<div class="classic" id="classic"></div>
+
+<script>
+function createLeds(container, count) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const led = document.createElement('div');
+        led.classList.add('led');
+        container.appendChild(led);
+    }
+}
+
+function updateLeds(container, value, bits) {
+    const leds = container.children;
+    const binary = value.toString(2).padStart(bits, '0');
+    for (let i = 0; i < bits; i++) {
+        if (binary[i] === '1') leds[i].classList.add('on');
+        else leds[i].classList.remove('on');
+    }
+}
+
+function updateTime() {
+    const now = new Date();
+
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+
+    // Binární LED hodiny (5 bitů)
+    updateLeds(document.getElementById('hours'), hours, 5);
+    // Osmičkové LED minuty (6 bitů, max 59)
+    updateLeds(document.getElementById('minutes'), minutes, 6);
+    // Hex LED sekundy (6 bitů, max 59)
+    updateLeds(document.getElementById('seconds'), seconds, 6);
+
+    // Klasický čas
+    document.getElementById('classic').textContent = now.toLocaleTimeString();
+}
+
+// Vytvoření LEDek
+createLeds(document.getElementById('hours'), 5);
+createLeds(document.getElementById('minutes'), 6);
+createLeds(document.getElementById('seconds'), 6);
+
+// Aktualizace každých 200 ms
+setInterval(updateTime, 200);
+updateTime(); // první okamžitá aktualizace
+</script>
+
+</body>
+</html>
